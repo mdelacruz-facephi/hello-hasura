@@ -1,0 +1,112 @@
+{
+  "version": 2,
+  "tables": [
+    {
+      "table": {
+        "schema": "public",
+        "name": "todos"
+      },
+      "event_triggers": [
+        {
+          "name": "todo_toggled",
+          "definition": {
+            "enable_manual": false,
+            "update": {
+              "columns": [
+                "done"
+              ]
+            }
+          },
+          "retry_conf": {
+            "num_retries": 0,
+            "interval_sec": 10,
+            "timeout_sec": 60
+          },
+          "webhook": "http://host.docker.internal:4000/event"
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "users"
+      },
+      "remote_relationships": [
+        {
+          "definition": {
+            "remote_field": {
+              "paymentInfo": {
+                "arguments": {
+                  "userId": "$external_id"
+                }
+              }
+            },
+            "hasura_fields": [
+              "external_id"
+            ],
+            "remote_schema": "payments"
+          },
+          "name": "payment_info"
+        }
+      ]
+    }
+  ],
+  "remote_schemas": [
+    {
+      "name": "payments",
+      "definition": {
+        "url": "http://host.docker.internal:5000/graphql",
+        "timeout_seconds": 60
+      }
+    }
+  ],
+  "actions": [
+    {
+      "name": "updateNotification",
+      "definition": {
+        "handler": "http://host.docker.internal:4000/action",
+        "output_type": "UpdateNotificationOutput",
+        "arguments": [
+          {
+            "name": "todo",
+            "type": "UpdateNotificationInput!"
+          }
+        ],
+        "type": "mutation",
+        "kind": "synchronous"
+      }
+    }
+  ],
+  "custom_types": {
+    "input_objects": [
+      {
+        "name": "UpdateNotificationInput",
+        "fields": [
+          {
+            "name": "id",
+            "type": "uuid!"
+          },
+          {
+            "name": "text",
+            "type": "String!"
+          },
+          {
+            "name": "done",
+            "type": "Boolean!"
+          }
+        ]
+      }
+    ],
+    "objects": [
+      {
+        "name": "UpdateNotificationOutput",
+        "fields": [
+          {
+            "name": "success",
+            "type": "Boolean!"
+          }
+        ]
+      }
+    ]
+  }
+}

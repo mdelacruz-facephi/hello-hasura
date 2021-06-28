@@ -1,0 +1,13 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type PaymentInfo {
+  id: String!
+  userId: String!
+  info: String!
+}
+
+type Query {
+  paymentInfo(userId: String!): PaymentInfo!
+}

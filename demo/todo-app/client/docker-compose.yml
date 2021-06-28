@@ -1,0 +1,9 @@
+version: "3.9"
+
+services:
+  todo-app-client:
+    image: todo-app-client
+    build:
+      context: .
+    ports:
+      - "3000:80"
